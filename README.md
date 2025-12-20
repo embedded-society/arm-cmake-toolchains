@@ -1,6 +1,6 @@
 # arm-cmake-toolchains
 
-Minimal CMake toolchain files for bare-metal ARM development. No magic, no opinions — just the essentials to get cross-compilation working.
+CMake toolchain files for bare-metal ARM development.
 
 ## Available Toolchains
 
