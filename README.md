@@ -1,6 +1,6 @@
 # arm-cmake-toolchains
 
-CMake toolchain files for bare-metal ARM development.
+CMake toolchain files for bare-metal ARM Cortex development.
 
 ## Available Toolchains
 
