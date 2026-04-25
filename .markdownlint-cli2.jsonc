@@ -1,0 +1,5 @@
+{
+    // Files owned by upstream — do not modify
+    // GitHub issue templates have their own format requirements (frontmatter, etc.)
+    "ignores": ["CODE_OF_CONDUCT.md", ".github/ISSUE_TEMPLATE/**"]
+}
