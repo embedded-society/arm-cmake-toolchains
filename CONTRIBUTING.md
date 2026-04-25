@@ -88,7 +88,7 @@ When submitting, use the **feature request** issue template.
 
 ### Prerequisites
 
-- **CMake** 3.13 or newer
+- **CMake** 3.19 or newer
 - **An ARM toolchain**, at least one of:
     - [Arm GNU Toolchain](https://developer.arm.com/Tools%20and%20Software/GNU%20Toolchain) (`arm-none-eabi-gcc`)
     - [LLVM Embedded Toolchain for Arm](https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm) (`clang` with `arm-none-eabi` target)
@@ -121,7 +121,7 @@ Because a toolchain file is metadata, "testing" means using it to drive a real b
     `CMakeLists.txt`:
 
     ```cmake
-    cmake_minimum_required(VERSION 3.13)
+    cmake_minimum_required(VERSION 3.19)
     project(test_toolchain LANGUAGES C CXX)
     add_executable(test_toolchain main.c)
     target_compile_options(test_toolchain PRIVATE -mcpu=cortex-m0 -mthumb)
