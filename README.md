@@ -6,10 +6,19 @@ CMake toolchain files for bare-metal ARM Cortex development.
 
 | File | Toolchain |
 |------|-----------|
-| `arm_none_eabi_gcc.cmake` | ARM GNU Toolchain (GCC) |
-| `arm_none_eabi_llvm.cmake` | LLVM/Clang with `arm-none-eabi` target |
+| `arm_none_eabi_gcc.cmake` | [Arm GNU Toolchain](https://developer.arm.com/Tools%20and%20Software/GNU%20Toolchain) (`arm-none-eabi-gcc`) |
+| `arm_none_eabi_llvm.cmake` | [LLVM Embedded Toolchain for Arm](https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm) (`clang` with `arm-none-eabi` target) |
 
-Both toolchains configure all standard CMake tools (compiler, linker, objcopy, size, etc.) and set up proper sysroot detection.
+Both toolchains configure all standard CMake tools (compiler, linker, objcopy, size, etc.) and set up automatic sysroot detection via the compiler's `-print-sysroot`.
+
+> **Important — for the LLVM toolchain file.** Sysroot detection runs
+> `clang --target=arm-none-eabi -print-sysroot` and expects a real path back.
+> This works with the **LLVM Embedded Toolchain for Arm** (which bundles picolibc,
+> multilibs, startup files, and linker scripts), but **not with stock upstream LLVM** —
+> stock `clang` can target ARM Cortex but ships no sysroot for `arm-none-eabi`, and
+> `-print-sysroot` returns an empty string. If you must use stock LLVM, set
+> `CMAKE_SYSROOT` and `CMAKE_FIND_ROOT_PATH` manually on the CMake command line and
+> the toolchain will respect your overrides.
 
 ## Usage
 
