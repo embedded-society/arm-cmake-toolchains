@@ -28,6 +28,15 @@ cmake --build build
 Architecture flags (`-mcpu`, `-mthumb`, `-mfloat-abi`, …), linker scripts, and optimisation levels belong in your
 own `CMakeLists.txt`, not in the toolchain file. See the project page for the full usage and customisation guide.
 
+## Verifying this download
+
+This archive ships with a signed build-provenance attestation. To confirm it was produced by the project's own
+release workflow and has not been tampered with, run (needs the [GitHub CLI](https://cli.github.com/)):
+
+```bash
+gh attestation verify arm-cmake-toolchains-__VERSION__.zip --repo embedded-society/arm-cmake-toolchains
+```
+
 ## Contributing
 
 This is an open project and contributions are very welcome. If you have a suggestion, spot a bug, or want another

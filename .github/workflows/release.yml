@@ -60,12 +60,14 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 10
 
-        # The only job that needs elevated scope: `contents: write` to
-        # create the GitHub release. This is a files-only repository, so
-        # there are no build artefacts to attest — the tag itself is the
-        # verifiable, immutable reference.
+        # The only job that needs elevated scope:
+        #   contents: write     — create the GitHub release and upload the asset
+        #   id-token: write      — mint the OIDC token that signs the attestation
+        #   attestations: write  — record build provenance for the release bundle
         permissions:
             contents: write
+            id-token: write
+            attestations: write
 
         steps:
             - name: Checkout repository
@@ -123,6 +125,15 @@ jobs:
 
                 echo "--- Bundle contents ---"
                 unzip -l "$ZIP"
+
+            # Sign a build-provenance attestation for the bundle: a verifiable
+            # record that *this* workflow, from *this* commit, produced this
+            # exact archive. Consumers can check it with
+            # `gh attestation verify <zip> --repo embedded-society/arm-cmake-toolchains`.
+            - name: Attest build provenance
+              uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
+              with:
+                subject-path: ${{ steps.bundle.outputs.zip }}
 
             - name: Create GitHub Release
               shell: bash
