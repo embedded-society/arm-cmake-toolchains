@@ -68,8 +68,11 @@ Cutting a release is intentionally restricted, so a compromised contributor acco
   cannot create the tag to trigger itself.
 - **Release tags must point at a signed commit** (`required_signatures` on the same ruleset) and are immutable —
   they cannot be force-updated or deleted to retarget a published version.
-- **Releases carry no build artefacts.** Consumers use the toolchain files at the tagged commit directly (git or
-  GitHub's auto-generated source archives), so there is nothing to attest beyond the signed, immutable tag itself.
+- **The release asset is a plain copy of tracked files, not a compiled build.** Each release attaches a
+  `arm-cmake-toolchains-vX.Y.Z.zip` bundle containing the two `.cmake` files, `CHANGELOG.md`, `LICENCE`, and a
+  bundle-specific `README.md` — all copied verbatim from the signed, tagged commit by the same admin-gated workflow.
+  There is no compilation step and nothing executable is generated, so the archive introduces no attack surface
+  beyond the tagged source itself; consumers who prefer can ignore it and use the files at the tag directly.
 
 See [CONTRIBUTING.md § Releasing](CONTRIBUTING.md#releasing) for the release procedure.
 

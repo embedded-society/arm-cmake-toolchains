@@ -100,22 +100,46 @@ jobs:
                 echo "--- Release Notes ---"
                 cat release_notes.md
 
+            - name: Build release bundle
+              id: bundle
+              shell: bash
+              run: |
+                TAG="${{ needs.validate.outputs.tag }}"
+                DIR="arm-cmake-toolchains-${TAG}"
+                ZIP="${DIR}.zip"
+
+                # Assemble a curated bundle — just the files a consumer needs —
+                # rather than shipping the repo's CI, tooling, and governance
+                # via GitHub's auto-generated source archive.
+                mkdir "$DIR"
+                cp arm_none_eabi_gcc.cmake arm_none_eabi_llvm.cmake CHANGELOG.md LICENCE "$DIR/"
+
+                # A bundle-specific README that points back to the project and
+                # invites contributions. Substitute the release version into it.
+                sed "s/__VERSION__/${TAG}/g" .github/release-assets/README.md > "$DIR/README.md"
+
+                zip -r "$ZIP" "$DIR"
+                echo "zip=$ZIP" >> "$GITHUB_OUTPUT"
+
+                echo "--- Bundle contents ---"
+                unzip -l "$ZIP"
+
             - name: Create GitHub Release
               shell: bash
               env:
                 GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                 TAG="${{ needs.validate.outputs.tag }}"
+                ZIP="${{ steps.bundle.outputs.zip }}"
 
                 # gh CLI is more reliable than third-party release actions.
                 # Only clean vX.Y.Z tags reach this workflow, so every release
-                # is a stable one and is marked "latest". No asset arguments:
-                # consumers use the toolchain files at this tag directly
-                # (git / GitHub's auto-generated source archives), so the
-                # release is notes + tag only.
+                # is a stable one and is marked "latest". The curated bundle
+                # is attached as a release asset alongside the notes.
                 gh release create "$TAG" \
                     --title "$TAG" \
                     --notes-file release_notes.md \
-                    --latest
+                    --latest \
+                    "$ZIP"
 
-                echo "Release created: $TAG"
+                echo "Release created: $TAG (asset: $ZIP)"

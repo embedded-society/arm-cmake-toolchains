@@ -26,7 +26,9 @@ Initial public release.
 - Governance and contributor documentation: `README.md`, `CONTRIBUTING.md`,
   `STYLE.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, issue and pull-request templates.
 - CI/CD: Markdown linting on pull requests and the main branch, stale-cache
-  cleanup, Dependabot for GitHub Actions, and this tag-triggered release workflow.
+  cleanup, Dependabot for GitHub Actions, and a tag-triggered release workflow
+  that publishes a curated `arm-cmake-toolchains-vX.Y.Z.zip` bundle (both
+  toolchain files, `CHANGELOG.md`, `LICENCE`, and a short README) as a release asset.
 
 ### Requirements
 

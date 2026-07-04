@@ -224,10 +224,13 @@ The process:
     - validates the tag format,
     - extracts the notes for that version from `CHANGELOG.md` (falling back to a bare `Release x.y.z` if no section
       is found — so step 1 matters),
-    - creates the GitHub release and marks it "latest".
+    - assembles a curated `arm-cmake-toolchains-vX.Y.Z.zip` bundle (both `.cmake` files, `CHANGELOG.md`, `LICENCE`,
+      and a bundle-specific `README.md` generated from `.github/release-assets/README.md`),
+    - creates the GitHub release, marks it "latest", and attaches the bundle as a release asset.
 
-Consumers use the toolchain files at the tagged commit directly (via `git` or GitHub's auto-generated source archives),
-so the release ships **notes and the tag only** — there are no build artefacts to attach.
+The bundle is a convenience so consumers can grab just the files they need without the repo's CI, tooling, and
+governance documents. They may equally use the toolchain files at the tagged commit directly, via `git` or GitHub's
+auto-generated source archives.
 
 To undo a mistaken release, delete both the GitHub release and the tag (`git push origin :refs/tags/vX.Y.Z`), fix the
 issue, and re-tag.
