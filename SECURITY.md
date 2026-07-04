@@ -58,6 +58,24 @@ These invariants already hold in `main`; a change that weakens any of them is a 
 If you spot a merged change that violates one of these — or a PR that tries to — please report it privately as below,
 even if you're not certain it's exploitable.
 
+### Release integrity
+
+Cutting a release is intentionally restricted, so a compromised contributor account cannot ship a malicious version:
+
+- **Only an organisation admin can create a release.** A tag ruleset restricts creation, update, and deletion of all
+  tags, with organisation admins as the sole bypass actor. Because the release workflow triggers on a pushed
+  `vMAJOR.MINOR.PATCH` tag, nobody without that privilege can start a release — and the workflow's `GITHUB_TOKEN`
+  cannot create the tag to trigger itself.
+- **Release tags must point at a signed commit** (`required_signatures` on the same ruleset) and are immutable —
+  they cannot be force-updated or deleted to retarget a published version.
+- **The release asset is a plain copy of tracked files, not a compiled build.** Each release attaches a
+  `arm-cmake-toolchains-vX.Y.Z.zip` bundle containing the two `.cmake` files, `CHANGELOG.md`, `LICENCE`, and a
+  bundle-specific `README.md` — all copied verbatim from the signed, tagged commit by the same admin-gated workflow.
+  There is no compilation step and nothing executable is generated, so the archive introduces no attack surface
+  beyond the tagged source itself; consumers who prefer can ignore it and use the files at the tag directly.
+
+See [CONTRIBUTING.md § Releasing](CONTRIBUTING.md#releasing) for the release procedure.
+
 ## Reporting a Vulnerability
 
 **Please do NOT report security vulnerabilities through public GitHub issues.**
