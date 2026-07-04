@@ -1,0 +1,58 @@
+name: CI - Pull Request
+
+# Read-only by default. This workflow only lints Markdown, so it never
+# needs write scope.
+permissions:
+    contents: read
+
+on:
+    pull_request:
+        branches: ["**"]
+
+    merge_group:
+        types: [checks_requested]
+
+    workflow_dispatch:
+
+# Cancel superseded runs for the same ref. `github.ref` is unique per PR
+# (refs/pull/N/merge) and is defined for every trigger here.
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    markdown:
+        name: Lint Markdown
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+            - name: Setup Node.js
+              id: setup-node
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+              with:
+                node-version: "lts/*"
+
+            # Restore the npm cache written by the main-branch workflow
+            # (read-only here: PRs, including forks, can restore but not
+            # save, which keeps the cache immune to poisoning from a PR).
+            # Keyed on the lockfile so a markdownlint-cli2 bump invalidates it.
+            - name: Restore npm cache
+              uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+              with:
+                path: ~/.npm
+                key: npm-markdownlint-${{ runner.os }}-node-${{ steps.setup-node.outputs.node-version }}-${{ hashFiles('package-lock.json') }}
+                restore-keys: |
+                    npm-markdownlint-${{ runner.os }}-node-${{ steps.setup-node.outputs.node-version }}-
+
+            # `npm ci` installs the exact pinned version from package-lock.json.
+            - name: Install dependencies
+              run: npm ci
+
+            # Globs and ignores come from .markdownlint-cli2.jsonc, so the
+            # script needs no CLI arguments.
+            - name: Lint Markdown
+              run: npm run lint

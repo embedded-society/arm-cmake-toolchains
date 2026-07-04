@@ -1,6 +1,23 @@
 # arm-cmake-toolchains
 
-CMake toolchain files for bare-metal ARM Cortex development.
+CMake toolchain files for bare-metal ARM Cortex development — Cortex-M, Cortex-R, and Cortex-A targets are all in scope.
+Drop a toolchain file into your project, point CMake at it, and cross-compilation for ARM works out of the box: the file
+locates the compiler and its ancillary tools, detects the sysroot, and configures CMake's root-path search. Architecture
+flags, linker scripts, and optimisation levels stay in your project — see [Scope](#scope) below for the boundary between
+what the toolchain configures and what belongs downstream.
+
+## Scope
+
+Toolchain files in this repo configure **compilers, ancillary tools, sysroot detection, and CMake root-path search behaviour**.
+Things that belong in the consumer's `CMakeLists.txt`, not here:
+
+- `-mcpu=...`, `-mthumb`, `-mfloat-abi=...` and other architecture-specific flags
+- Linker scripts (`-T`)
+- Newlib / nano / nosys spec selection
+- Optimisation flags (`-O...`)
+- Project-level warnings (`-Wall`, `-Werror`, …)
+
+If you find yourself wanting to add any of those to the toolchain file, that's a strong sign the change belongs downstream.
 
 ## Available Toolchains
 
@@ -19,6 +36,9 @@ Both toolchains configure all standard CMake tools (compiler, linker, objcopy, s
 > `-print-sysroot` returns an empty string. If you must use stock LLVM, set
 > `CMAKE_SYSROOT` and `CMAKE_FIND_ROOT_PATH` manually on the CMake command line and
 > the toolchain will respect your overrides.
+
+Want another toolchain, default, or target supported? Open a feature request — see
+[CONTRIBUTING.md](CONTRIBUTING.md) for how suggestions are scoped.
 
 ## Usage
 

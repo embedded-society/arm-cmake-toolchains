@@ -34,25 +34,18 @@ Before submitting a bug report:
 
 1. Check the [existing issues](https://github.com/embedded-society/arm-cmake-toolchains/issues) to avoid duplicates.
 2. Make sure you're using the latest version of the toolchain file from `main`.
-3. Collect the relevant information:
-    - Host operating system and version
-    - CMake version
-    - Generator used (`Ninja`, `Make`, etc.)
-    - ARM toolchain in use and its version (`arm-none-eabi-gcc --version` / `clang --version`)
-    - Target ARM Cortex variant (e.g. Cortex-M0, Cortex-R5, Cortex-A53) and any `-mcpu` / `-mfloat-abi` / `-marm` / `-mthumb` flags you set
-    - The minimal CMake project that reproduces the issue
-    - Full CMake configure / build output
+3. Gather the details the **bug report** issue template asks for — host OS, CMake and ARM-toolchain versions,
+   generator, target Cortex variant and flags, a minimal reproducing project, and the full configure / build output.
 
-When submitting, use the **bug report** issue template.
+When submitting, use the **bug report** issue template; it lists every field to fill in so nothing is missed.
 
 ### Suggesting Features
 
 We welcome suggestions for additional toolchains, new defaults, or extra `set(...)` lines that benefit a wide range of consumers. Before submitting:
 
 1. Check [existing issues](https://github.com/embedded-society/arm-cmake-toolchains/issues) for similar ideas.
-2. Consider whether the change belongs in the toolchain file itself, or in your downstream project's `CMakeLists.txt`
-   (toolchain files should stay focused on compiler and tool location, sysroot detection, and root-path search rules —
-   not on architecture flags or linker scripts, which are project-specific).
+2. Consider whether the change belongs in the toolchain file itself or in your downstream project's `CMakeLists.txt`.
+   [README.md § Scope](README.md#scope) is the canonical list of what a toolchain file may and may not configure.
 
 When submitting, use the **feature request** issue template.
 
@@ -155,15 +148,9 @@ multiple Cortex variants (e.g. one Cortex-M and one Cortex-R) and mention the ma
 
 ## Coding Standards
 
-CMake style, Markdown style, YAML / JSON style, and English style are all defined in **[STYLE.md](STYLE.md)**. Highlights:
-
-- 4-space indentation throughout (no tabs).
-- Lowercase CMake commands (`set`, `if`, `endif`); no command-name repetition in `endif()` / `endforeach()`.
-- Guard every default with `if(NOT DEFINED ...)` so the toolchain can be overridden from the consumer's command line or preset.
-- British spelling in prose and comments.
-- Licence header at the top of every `.cmake` file (Apache 2.0 boilerplate).
-
-See [STYLE.md](STYLE.md) for the full set of rules.
+CMake style, Markdown style, YAML / JSON / JavaScript style, and English style are all defined in **[STYLE.md](STYLE.md)** —
+it is the single source of truth for every convention in this repo. Read it before your first contribution; this guide does
+not restate its rules, so that they can never drift out of sync.
 
 ---
 
@@ -184,14 +171,24 @@ If the change needs more than the subject line, leave a blank line and add a bod
 
 ## Documentation
 
-| Location | Purpose |
-|----------|---------|
-| `README.md` | User-facing overview, install / usage instructions |
-| `CONTRIBUTING.md` | This file — contributor guidelines |
-| `SECURITY.md` | Security policy and vulnerability reporting |
-| `STYLE.md` | Style guide for CMake, Markdown, YAML, JSON, English |
-| `CODE_OF_CONDUCT.md` | Community code of conduct (Contributor Covenant 3.0) |
-| `CHANGELOG.md` | Reserved — will be populated when v1.0.0 is cut |
+This table is the **canonical file-purpose registry** for the repository: every documentation file owns exactly one kind of
+content, and that content lives only there. When you add information, put it in the file that owns it and link from elsewhere —
+never copy it. If two files would say the same thing, one of them is wrong.
+
+| File | Owns (and nothing else) |
+|------|-------------------------|
+| `README.md` | Project intro, the toolchain-vs-downstream scope rule, and install / usage / customisation instructions |
+| `CONTRIBUTING.md` | This file — contribution flow, dev setup, testing procedure, and this registry |
+| `STYLE.md` | Every style and convention rule (CMake, Markdown, YAML, JSON, JavaScript, English) — how prose and code should look |
+| `SECURITY.md` | Threat model, supply-chain integrity, and vulnerability reporting |
+| `CODE_OF_CONDUCT.md` | Community code of conduct (verbatim Contributor Covenant 3.0 — do not edit) |
+| `CHANGELOG.md` | Release history — reserved, populated when v1.0.0 is cut |
+| `.github/PULL_REQUEST_TEMPLATE.md` | The PR checklist form (links to the rules above; states none of them) |
+| `.github/ISSUE_TEMPLATE/bug_report.md` | The bug-report form and its environment-field list |
+| `.github/ISSUE_TEMPLATE/feature_request.md` | The feature-request form |
+
+STYLE.md § Single Source of Truth maps each *kind of information* to its canonical file; this table maps each *file* to the
+information it owns. The two are the same principle from opposite directions — keep them consistent.
 
 When you change behaviour visible to consumers (default tool paths, sysroot logic, etc.), update `README.md` in the same PR.
 
