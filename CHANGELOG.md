@@ -7,4 +7,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-*This changelog will be populated once the first official release is published. DON'T touch it until then!*
+*This changelog will be populated once the first official release is published. DO NOT touch it until then!*
