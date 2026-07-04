@@ -16,6 +16,7 @@ but a few conventions help keep the toolchains broadly usable.
 - [Coding Standards](#coding-standards)
 - [Commit Messages](#commit-messages)
 - [Documentation](#documentation)
+- [Releasing](#releasing)
 
 ---
 
@@ -66,7 +67,7 @@ When submitting, use the **feature request** issue template.
 - [ ] No trailing whitespace, final newline present (`.editorconfig` will guide you)
 - [ ] British spelling used in comments and documentation
 - [ ] Style matches [STYLE.md](STYLE.md)
-- [ ] [CHANGELOG.md](CHANGELOG.md) is **not** updated unless a release is being cut — it stays empty until v1.0.0
+- [ ] [CHANGELOG.md](CHANGELOG.md) is **not** touched in feature PRs — it is updated only when a release is cut (see [Releasing](#releasing))
 
 #### PR Process
 
@@ -182,7 +183,7 @@ never copy it. If two files would say the same thing, one of them is wrong.
 | `STYLE.md` | Every style and convention rule (CMake, Markdown, YAML, JSON, JavaScript, English) — how prose and code should look |
 | `SECURITY.md` | Threat model, supply-chain integrity, and vulnerability reporting |
 | `CODE_OF_CONDUCT.md` | Community code of conduct (verbatim Contributor Covenant 3.0 — do not edit) |
-| `CHANGELOG.md` | Release history — reserved, populated when v1.0.0 is cut |
+| `CHANGELOG.md` | Release history — one entry per released version, updated only when a release is cut (see [Releasing](#releasing)) |
 | `.github/PULL_REQUEST_TEMPLATE.md` | The PR checklist form (links to the rules above; states none of them) |
 | `.github/ISSUE_TEMPLATE/bug_report.md` | The bug-report form and its environment-field list |
 | `.github/ISSUE_TEMPLATE/feature_request.md` | The feature-request form |
@@ -191,6 +192,45 @@ STYLE.md § Single Source of Truth maps each *kind of information* to its canoni
 information it owns. The two are the same principle from opposite directions — keep them consistent.
 
 When you change behaviour visible to consumers (default tool paths, sysroot logic, etc.), update `README.md` in the same PR.
+
+---
+
+## Releasing
+
+Releases are cut **only by an organisation admin** — a deliberate supply-chain control so that a single compromised
+contributor account cannot ship a malicious version. The tag ruleset enforces this; see
+[SECURITY.md § Release integrity](SECURITY.md#release-integrity) for how. The single source of truth for a release is
+its **Git tag** — there is no version field in any manifest to keep in sync (`package.json` is private local lint
+tooling and is not the project version). The [`.github/workflows/release.yml`](.github/workflows/release.yml) workflow
+does the rest automatically.
+
+The process:
+
+1. On `main`, add a new section to [CHANGELOG.md](CHANGELOG.md) for the version being released, following the
+   [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format already used there. Use a `## [x.y.z] - YYYY-MM-DD`
+   heading and a matching `[x.y.z]: …/releases/tag/vx.y.z` link reference at the bottom. Merge this through a normal PR.
+
+2. Tag the release commit and push the tag. The tag **must** be exactly `vMAJOR.MINOR.PATCH`, matching
+   [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Pre-release tags (e.g. `-rc1`) are not supported —
+   only clean version tags trigger a release:
+
+    ```bash
+    git checkout main && git pull
+    git tag v1.0.0
+    git push origin v1.0.0
+    ```
+
+3. Pushing the tag triggers the release workflow, which:
+    - validates the tag format,
+    - extracts the notes for that version from `CHANGELOG.md` (falling back to a bare `Release x.y.z` if no section
+      is found — so step 1 matters),
+    - creates the GitHub release and marks it "latest".
+
+Consumers use the toolchain files at the tagged commit directly (via `git` or GitHub's auto-generated source archives),
+so the release ships **notes and the tag only** — there are no build artefacts to attach.
+
+To undo a mistaken release, delete both the GitHub release and the tag (`git push origin :refs/tags/vX.Y.Z`), fix the
+issue, and re-tag.
 
 ---
 
