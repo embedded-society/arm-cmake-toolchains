@@ -17,7 +17,7 @@ Example: "I'm frustrated when [...]" or "It would be helpful to [...]"
 A clear and concise description of what you want to happen.
 
 If your proposal involves architecture-specific flags (`-mcpu`, `-mthumb`, `-mfloat-abi`, linker scripts, specs files, optimisation levels, …),
-please first read [STYLE.md § CMake / Scope](../../STYLE.md#scope) — those typically belong in the consumer's `CMakeLists.txt`,
+please first read [README.md § Scope](../../README.md#scope) — those typically belong in the consumer's `CMakeLists.txt`,
 not in the toolchain file.
 
 ## Alternatives Considered

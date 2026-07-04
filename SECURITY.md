@@ -24,6 +24,40 @@ A vulnerability in this context typically means one of:
 
 If you believe you've found something matching one of those, please report it privately as described below.
 
+### Supply-chain integrity
+
+The threats above describe what a *consumer* risks by using this repository. The other half of the model is
+protecting the repository *itself* from tampering. Because the repo is deliberately tiny — two `.cmake` files plus
+governance docs and a thin CI setup — every part of it is small enough to review in full, and anything unexpected
+should stand out immediately. The concrete risks:
+
+1. **Malicious CI/CD changes.** A pull request that alters a workflow to exfiltrate secrets, escalate `permissions:`,
+   pull in an unpinned or unfamiliar third-party action, or make the `github-script` cache-cleanup step do more than
+   prune caches. CI runs with a token and (for some jobs) write scope, so this is the highest-value target in the repo.
+2. **Unexpected files.** Any new file that isn't a toolchain file, a governance/Markdown document, or part of the
+   known CI/lint tooling. Binaries, build artifacts, scripts, `curl | sh`-style installers, or vendored dependencies
+   have no reason to appear here and should be treated as suspicious until explained.
+3. **Fishy CMake.** A subtly altered `execute_process(...)`, an added `file(DOWNLOAD ...)` / `include(...)` of a remote
+   or attacker-controlled path, or a command that runs a program other than the expected `arm-none-eabi-*` / `clang`
+   tools. A change that broadens what the toolchain executes, rather than where it looks, deserves close scrutiny.
+
+### What reviewers watch for
+
+These invariants already hold in `main`; a change that weakens any of them is a red flag, not a routine diff:
+
+- **Actions are pinned to full commit SHAs** (with a `# vX.Y.Z` comment), never to a mutable tag or branch.
+- **Workflows use least-privilege `permissions:`** — read-only by default; write scope only where a job genuinely
+  needs it (e.g. `actions: write` for cache cleanup) and never broader.
+- **PR workflows restore caches but never save them**, so a fork PR cannot poison the shared cache.
+- **Dependencies are pinned** in `package-lock.json` and installed with `npm ci`; version bumps arrive as reviewable
+  Dependabot PRs, not as ad-hoc edits to the lockfile.
+- **No new file appears without a clear reason** tied to the PR's stated purpose.
+- **CMake changes stay within scope** — compiler/tool location, sysroot detection, root-path search — and introduce no
+  new network access, no new external program invocation, and no new remote `include`/`DOWNLOAD`.
+
+If you spot a merged change that violates one of these — or a PR that tries to — please report it privately as below,
+even if you're not certain it's exploitable.
+
 ## Reporting a Vulnerability
 
 **Please do NOT report security vulnerabilities through public GitHub issues.**
@@ -64,4 +98,4 @@ When reporting, please include:
 
 ---
 
-*This security policy was last updated on 2026-04-25.*
+*This security policy was last updated on 2026-07-04.*
