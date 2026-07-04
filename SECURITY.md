@@ -73,6 +73,16 @@ Cutting a release is intentionally restricted, so a compromised contributor acco
   bundle-specific `README.md` — all copied verbatim from the signed, tagged commit by the same admin-gated workflow.
   There is no compilation step and nothing executable is generated, so the archive introduces no attack surface
   beyond the tagged source itself; consumers who prefer can ignore it and use the files at the tag directly.
+- **The bundle carries a signed build-provenance attestation.** The release workflow signs a
+  [build provenance](https://docs.github.com/actions/security-guides/using-artifact-attestations) statement binding
+  the archive's digest to the exact workflow run and commit that produced it. This is a verifiable proof of origin,
+  not just the argument above — anyone can check it with:
+
+    ```bash
+    gh attestation verify arm-cmake-toolchains-vX.Y.Z.zip --repo embedded-society/arm-cmake-toolchains
+    ```
+
+  A tampered or re-hosted archive fails this check.
 
 See [CONTRIBUTING.md § Releasing](CONTRIBUTING.md#releasing) for the release procedure.
 

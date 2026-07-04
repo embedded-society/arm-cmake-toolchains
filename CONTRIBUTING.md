@@ -226,6 +226,8 @@ The process:
       is found — so step 1 matters),
     - assembles a curated `arm-cmake-toolchains-vX.Y.Z.zip` bundle (both `.cmake` files, `CHANGELOG.md`, `LICENCE`,
       and a bundle-specific `README.md` generated from `.github/release-assets/README.md`),
+    - signs a build-provenance attestation for the bundle (see
+      [SECURITY.md § Release integrity](SECURITY.md#release-integrity)),
     - creates the GitHub release, marks it "latest", and attaches the bundle as a release asset.
 
 The bundle is a convenience so consumers can grab just the files they need without the repo's CI, tooling, and

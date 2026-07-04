@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- Release bundles now carry a signed [build-provenance attestation](https://docs.github.com/actions/security-guides/using-artifact-attestations),
+  so consumers can verify an archive was produced by this project's release workflow with
+  `gh attestation verify <zip> --repo embedded-society/arm-cmake-toolchains`.
+
 ## [1.0.0] - 2026-07-04
 
 Initial public release.
